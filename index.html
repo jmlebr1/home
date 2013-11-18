@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Jeanne-Marie Lebrun-Klein Orthophoniste</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +11,15 @@
     <!-- Le styles -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <style>
+      html, body {
+          height: 100%;
+      }
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+      .fill {
+          min-height: 100%;
+          height: 100%;
       }
       .ruban {
           display:inline-block;
@@ -21,7 +28,13 @@
           top: 0;
           width:auto;
           z-index: 3;
-    }
+      }
+      #map_canvas {
+          width: 100%;
+          min-height: 100%;
+          height: 100%;
+          display: block;
+      }
     </style>
     <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -32,6 +45,122 @@
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="assets/ico/favicon.ico">
+
+  
+</head>
+
+<body class="preview" data-spy="scroll" data-target=".subnav" data-offset="80">
+
+    <div class="container well fill">
+	    <img src="assets/img/ruban.png" alt="Nouvelle adresse" class="ruban">
+        <section id="hcard-Jeanne-Marie-Lebrun-Klein" class="vcard">
+            <div class="row">
+                <div class="span12" style="text-align: center;">
+                    <header class="fn">
+                    <h1>Jeanne-Marie Lebrun-Klein</h1>
+                    <h2 class="tags"><a href="https://fr.wikipedia.org/wiki/Orthophoniste">Orthophoniste dipl&ocirc;m&eacute;e</a></h2>
+                    </header>
+                    <div class="org">Cabinet d'orthophonie Lebrun-Klein</div>
+                    <address class="adr">
+                        <div class="street-address">18, avenue Merlin</div>
+                        <span class="postal-code">57100</span>
+                        <span class="locality">Thionville</span>
+                        <span class="country-name">France</span>
+                    </address>
+                    <div class="tel">t&eacute;l: 06 85 52 23 83</div>
+                    <div class="tel">t&eacute;l: 03 82 85 39 65</div>
+                    <a class="email" href="mailto:jm@lebrun-klein.fr">jm@lebrun-klein.fr</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="row" style="padding-top: 20px;">
+        <div class="span8 offset2" id="map_container">
+            <div id="map_canvas" style="width: 100%; height:400px;"></div>
+        </div>
+        </div>
+
+        <footer>
+            <hr />
+      		<p style="text-align: center">&copy; <a href="http://www.lebrun-klein.fr">Jeanne-Marie Lebrun-Klein</a> 2013</p>
+      	</footer>      
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.11&sensor=false" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // execute
+            (function() {
+                // Points of interest
+                var locations = new Array();
+                var i = 0;
+                locations[i++] = "Cabinet Lebrun-Klein, 18 avenue Merlin, Thionville, France";
+                i = 0;
+
+                // map options
+                var options = {
+                    zoom: 15,
+                    center: new google.maps.LatLng(49.35672, 6.15869), // Thionville 
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    mapTypeControl: true
+                };
+
+                // init map
+                // console.log('Initialise map...');
+                var map = new google.maps.Map(document.getElementById('map_canvas'), options);
+
+                // use the Google API to translate addresses to GPS coordinates
+                var geocoder = new google.maps.Geocoder();
+                if (geocoder) {
+                    // console.log('Got a new instance of Google Geocoder object');
+                    // Call function 'createNextMarker' every second
+                    var myVar = window.setInterval(function(){createNextMarker()}, 500);
+
+                    function createNextMarker() {
+                        if (i < locations.length) {
+                            var customer = locations[i];
+                            var parts = customer.split(",");
+                            var name = parts.splice(0,1);
+                            var address = parts.join(",");
+                            // console.log('Looking up ' + name + ' at address ' + address);
+                            geocoder.geocode({ 'address': address }, makeCallback(name));
+                            i++;
+                        } else {
+                            // console.log('Ready looking up ' + i + ' addresses');
+                            window.clearInterval(myVar);
+                        }
+                    };
+
+                    function makeCallback(name) {
+                        var geocodeCallBack = function (results, status) {
+                            if (status == google.maps.GeocoderStatus.OK) {
+                                var longitude = results[0].geometry.location.lng();
+                                var latitude = results[0].geometry.location.lat();
+                                // console.log('Received result: lat:' + latitude + ' long:' + longitude);
+                                var marker = new google.maps.Marker({
+                                    position: new google.maps.LatLng(latitude, longitude),
+                                    map: map,
+                                    title: name + ' : ' + results[0].formatted_address});
+                            } else {
+                                // console.log('No results found: ' + status);
+                            }
+                        }
+                        return geocodeCallBack;
+                    }
+                } // endif geocoder
+
+                // Closing bits of jscript...
+            })();
+        });
+	</script>
+
 	<script type="text/javascript">
 
 	  var _gaq = _gaq || [];
@@ -46,46 +175,6 @@
 	  })();
 
 	</script>
-  
-  </head>
-
-<body class="preview" data-spy="scroll" data-target=".subnav" data-offset="80">
-
-    <div class="container well">
-	    <img src="assets/img/ruban.png" alt="Nouvelle adresse" class="ruban">
-        <section id="hcard-Jeanne-Marie-Lebrun-Klein" class="vcard">
-            <div class="row">
-            <div class="span12" style="text-align: center;">
-                <header class="fn">
-                    <h1>Jeanne-Marie Lebrun-Klein</h1>
-                    <h2 class="tags"><a href="https://fr.wikipedia.org/wiki/Orthophoniste">Orthophoniste dipl&ocirc;m&eacute;e</a></h2>
-                </header>
-                <div class="org">Cabinet d'orthophonie Lebrun-Klein</div>
-                <address class="adr">
-                    <div class="street-address">18, avenue Merlin</div>
-                    <span class="postal-code">57100</span>
-                    <span class="locality">Thionville</span>
-                    <span class="country-name">France</span>
-                </address>
-                <div class="tel">t&eacute;l: 06 85 52 23 83</div>
-                <div class="tel">t&eacute;l: 03 82 85 39 65</div>
-                <a class="email" href="mailto:jm@lebrun-klein.fr">jm@lebrun-klein.fr</a>
-            </div>
-            </div>
-        </section>
-
-      	<footer style="padding-top: 20px;">
-		<hr />
-      		<p style="text-align: center">&copy; <a href="http://www.lebrun-klein.fr">Jeanne-Marie Lebrun-Klein</a> 2013</p>
-      	</footer>      
-
-    </div> <!-- /container -->
-
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script src="assets/js/bootstrap.js"></script>
 
   </body>
 </html>
